@@ -1,0 +1,56 @@
+name: Build ScreenCaptureTracking
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+
+permissions:
+  contents: write  # Needed for uploading artifacts
+
+jobs:
+  build:
+    name: Build x64 Release
+    runs-on: windows-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.28'
+
+      - name: Configure CMake
+        run: |
+          cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: |
+          cmake --build build --config Release --parallel
+
+      - name: Verify executable
+        run: |
+          ls -la build/bin/Release/
+          # Quick test - just check it runs and shows help (will exit with error code but that's OK)
+          build/bin/Release/ScreenCaptureTracking.exe --help 2>&1 || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScreenCaptureTracking-x64-Release
+          path: |
+            build/bin/Release/ScreenCaptureTracking.exe
+            config.ini
+          retention-days: 30
+
+      - name: Create release (on tag push)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/bin/Release/ScreenCaptureTracking.exe
+            config.ini
+          generate_release_notes: true

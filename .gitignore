@@ -1,0 +1,37 @@
+# Build directories
+build/
+bin/
+lib/
+*.sln
+*.vcxproj*
+*.vcxproj.filters
+*.vcxproj.user
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CMakePresets.json
+
+# IDE
+.vs/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Executables (built locally)
+*.exe
+*.dll
+*.lib
+*.exp
+*.pdb
+*.ilk
+
+# Logs
+*.log
